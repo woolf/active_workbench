@@ -1,15 +1,16 @@
-= active_workbench
+= Active Workbench
 
+This gem generates ActiveRecord Model files from a MySQL Workbench .mwb file.
+ActiveRecord's associations will be added to models by analyzing foreign keys in MySQL Workbench EER Model.
 
-
-== install
+== Install
 
 * git clone git@github.com:woolf/active_workbench.git
 * cd active_workbench
 * gem build active_workbench.gemspec
 * gem install the gem that was built
 
-== usage
+== Usage
   
 Usage: amwbench [options] path_to_file.mwb
     -c, --create PATH                Create ActiveRecord classes in provided directory. Warning! files with same name will be overwriten.
@@ -17,6 +18,125 @@ Usage: amwbench [options] path_to_file.mwb
     -?, --help                       Show this help
   
 If you not specify -c option, then results output will shown in console.
+
+
+== Sample
+
+Sample output of Sakila example database which you can download here http://dev.mysql.com/doc/index-other.html
+Or use file provided it this gem in test folder.
+
+* cd active_workbench
+* amwbench test/sakila.mwb
+
+    class Rental < ActiveRecord::Base
+      set_table_name("rental")
+      has_many :payments, :class_name => "Payment", :primary_key = "rental_id"
+      belongs_to :staff, :class_name => "Staff", :primary_key = "staff_id"
+      belongs_to :customer, :class_name => "Customer", :primary_key = "customer_id"
+      belongs_to :inventory, :class_name => "Inventory", :primary_key = "inventory_id"
+    end
+
+    class FilmActor < ActiveRecord::Base
+      set_table_name("film_actor")
+      belongs_to :actor, :class_name => "Actor", :primary_key = "actor_id"
+      belongs_to :film, :class_name => "Film", :primary_key = "film_id"
+    end
+
+    class Actor < ActiveRecord::Base
+      set_table_name("actor")
+      has_many :film_actors, :class_name => "FilmActor", :primary_key = "actor_id"
+    end
+
+    class City < ActiveRecord::Base
+      set_table_name("city")
+      belongs_to :country, :class_name => "Country", :primary_key = "country_id"
+      has_many :addres, :class_name => "Addres", :primary_key = "city_id"
+    end
+
+    class Addres < ActiveRecord::Base
+      set_table_name("address")
+      has_many :customers, :class_name => "Customer", :foreign_key => "address_id", :primary_key = "address_id"
+      belongs_to :city, :class_name => "City", :primary_key = "city_id"
+      has_many :staffs, :class_name => "Staff", :foreign_key => "address_id", :primary_key = "address_id"
+      has_many :stores, :class_name => "Store", :foreign_key => "address_id", :primary_key = "address_id"
+    end
+
+    class Inventory < ActiveRecord::Base
+      set_table_name("inventory")
+      belongs_to :film, :class_name => "Film", :primary_key = "film_id"
+      has_many :film_texts, :class_name => "FilmText", :foreign_key => "film_id", :primary_key = "film_id"
+      belongs_to :store, :class_name => "Store", :primary_key = "store_id"
+      has_many :rentals, :class_name => "Rental", :primary_key = "inventory_id"
+    end
+
+    class Category < ActiveRecord::Base
+      set_table_name("category")
+      has_many :film_categories, :class_name => "FilmCategory", :primary_key = "category_id"
+    end
+
+    class Customer < ActiveRecord::Base
+      set_table_name("customer")
+      has_many :payments, :class_name => "Payment", :primary_key = "customer_id"
+      belongs_to :addre, :class_name => "Addres", :foreign_key => "address_id", :primary_key = "address_id"
+      belongs_to :store, :class_name => "Store", :primary_key = "store_id"
+      has_many :rentals, :class_name => "Rental", :primary_key = "customer_id"
+    end
+
+    class FilmCategory < ActiveRecord::Base
+      set_table_name("film_category")
+      belongs_to :film, :class_name => "Film", :primary_key = "film_id"
+      belongs_to :category, :class_name => "Category", :primary_key = "category_id"
+    end
+
+    class Film < ActiveRecord::Base
+      set_table_name("film")
+      has_many :inventories, :class_name => "Inventory", :primary_key = "film_id"
+      belongs_to :language, :class_name => "Language", :foreign_key => "original_language_id", :primary_key = "language_id"
+      has_many :film_categories, :class_name => "FilmCategory", :primary_key = "film_id"
+      has_many :film_actors, :class_name => "FilmActor", :primary_key = "film_id"
+      belongs_to :language, :class_name => "Language", :primary_key = "language_id"
+    end
+
+    class Staff < ActiveRecord::Base
+      set_table_name("staff")
+      has_many :stores, :class_name => "Store", :foreign_key => "manager_staff_id", :primary_key = "manager_staff_id"
+      has_many :rentals, :class_name => "Rental", :primary_key = "staff_id"
+      belongs_to :store, :class_name => "Store", :primary_key = "store_id"
+      has_many :payments, :class_name => "Payment", :primary_key = "staff_id"
+      belongs_to :addre, :class_name => "Addres", :foreign_key => "address_id", :primary_key = "address_id"
+    end
+
+    class Store < ActiveRecord::Base
+      set_table_name("store")
+      belongs_to :staff, :class_name => "Staff", :foreign_key => "manager_staff_id", :primary_key = "staff_id"
+      has_many :customers, :class_name => "Customer", :primary_key = "store_id"
+      has_many :staffs, :class_name => "Staff", :primary_key = "store_id"
+      has_many :inventories, :class_name => "Inventory", :primary_key = "store_id"
+      belongs_to :addre, :class_name => "Addres", :foreign_key => "address_id", :primary_key = "address_id"
+    end
+
+    class Payment < ActiveRecord::Base
+      set_table_name("payment")
+      belongs_to :rental, :class_name => "Rental", :primary_key = "rental_id"
+      belongs_to :customer, :class_name => "Customer", :primary_key = "customer_id"
+      belongs_to :staff, :class_name => "Staff", :primary_key = "staff_id"
+    end
+
+    class Language < ActiveRecord::Base
+      set_table_name("language")
+      has_many :films, :class_name => "Film", :foreign_key => "original_language_id", :primary_key = "original_language_id"
+      has_many :films, :class_name => "Film", :primary_key = "language_id"
+    end
+
+    class FilmText < ActiveRecord::Base
+      set_table_name("film_text")
+      belongs_to :inventory, :class_name => "Inventory", :foreign_key => "film_id", :primary_key = "film_id"
+    end
+
+    class Country < ActiveRecord::Base
+      set_table_name("country")
+      has_many :cities, :class_name => "City", :primary_key = "country_id"
+    end
 
 == Copyright
 

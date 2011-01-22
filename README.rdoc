@@ -17,12 +17,12 @@ Usage: amwbench [options] path_to_file.mwb
     -v, --verbose                    Run verbosely
     -?, --help                       Show this help
   
-If you not specify -c option, then results output will shown in console.
+If you do not specify -c option, then results output will shown in console.
 
 
 == Sample
 
-Sample output of Sakila example database which you can download here http://dev.mysql.com/doc/index-other.html
+Sample output for Sakila example database which you can download here http://dev.mysql.com/doc/index-other.html
 Or use file provided it this gem in test folder.
 
 * cd active_workbench
@@ -137,6 +137,10 @@ Or use file provided it this gem in test folder.
       set_table_name("country")
       has_many :cities, :class_name => "City", :primary_key = "country_id"
     end
+
+== Issues
+
+* active_workbench does not generate valid PK for ActiveRecord model if primary key differs from <tt>id</tt>
 
 == Copyright
 

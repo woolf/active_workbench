@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'fileutils'
+
+begin
+  require 'active_workbench'
+rescue LoadError
+  $stderr.puts <<-EOS
+#{'*'*50}
+  Could not find 'active_workbench'
+#{'*'*50}
+  EOS
+  exit(1)
+end
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: amwbench [options] path_to_file.mwb"
+
+  opts.on("-c", "--create PATH", "Create ActiveRecord classes in provided directory. Warning! files with same name will be overwriten.") do |c|
+    options[:create] = c
+  end
+  opts.on("-v", "--verbose", "Run verbosely") do |v|
+    options[:verbose] = v
+  end
+  opts.on("-?", "--help", "Show this help") do |v|
+    puts opts
+    exit
+  end
+end.parse!
+
+if ARGV.size < 1
+  $stderr.puts "No MySQL Workbench file specified"
+  exit 1
+end
+
+if options[:create]
+  begin
+    unless File.directory?(options[:create])
+      FileUtils.mkdir_p options[:create]
+    end
+    unless File.directory?(options[:create])
+      $stderr.puts "Could not create output directory - #{options[:create]}."
+      exit 1
+    end
+  rescue Errno::EACCES
+      $stderr.puts "Could not create output directory. #{$!.message}"
+      exit 1
+  end
+end
+
+begin
+  z = Zip::ZipFile.open(ARGV.first)
+  ActiveWorkbench::Runner.new(z.read("document.mwb.xml"), options).run
+rescue Errno::ENOENT
+  $stderr.puts "MySQL Workbench file could not be parsed"
+  exit 1
+rescue Zip::ZipError
+  $stderr.puts $!.message
+  exit 1
+end

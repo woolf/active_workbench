@@ -1,10 +1,11 @@
 require "rubygems"
 require "nokogiri"
-require 'pp'
 require 'active_support'
 require 'active_support/inflector'
+require 'zip/zip'
+require 'optparse'
 
-module ActiveBench
+module ActiveWorkbench
   class Schema
     def add_table id, name
       @tables_ids ||= {}
@@ -86,7 +87,7 @@ module ActiveBench
         associations << fk.to_assotiation
       end
 
-      "class #{class_name}#{set_table_name}#{associations}\nend"
+      "class #{class_name} < ActiveRecord::Base#{set_table_name}#{associations}\nend"
     end
   end
 

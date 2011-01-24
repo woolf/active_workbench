@@ -27,12 +27,13 @@ Gem::Specification.new do |s|
   ]
   s.executables      = ["amwbench"]
   s.default_executable = "amwbench"
-  s.homepage = %q{}
+  s.homepage = %q{https://github.com/woolf/active_workbench}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{active_workbench}
   s.rubygems_version = %q{0.0.1}
-  s.summary = %q{}
+  s.summary = %q{This gem generates ActiveRecord Model files from a MySQL Workbench .mwb file}
+  s.description = %q{Active Workbench gem generates ActiveRecord Model files from a MySQL Workbench .mwb file. ActiveRecord’s associations will be added to models by analyzing foreign keys in MySQL Workbench EER Model.}
   s.test_files = [
   ]
 

@@ -5,7 +5,7 @@ ActiveRecord's associations will be added to models by analyzing foreign keys in
 
 == Install
 
-* git clone git@github.com:woolf/active_workbench.git
+* git clone git://github.com/woolf/active_workbench.git
 * cd active_workbench
 * gem build active_workbench.gemspec
 * gem install the gem that was built
